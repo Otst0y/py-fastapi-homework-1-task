@@ -8,10 +8,11 @@ from schemas import MovieDetailResponseSchema, MovieListResponseSchema
 
 router = APIRouter()
 
+
 @router.get("/movies/", response_model=MovieListResponseSchema)
 async def get_movies(
         page: int = Query(1, ge=1),
-        per_page: int = Query(10, ge=1,  le=20),
+        per_page: int = Query(10, ge=1, le=20),
         db: AsyncSession = Depends(get_db)
 ):
     total_items_result = await db.execute(select(func.count()).select_from(MovieModel))
@@ -29,8 +30,8 @@ async def get_movies(
     movies = result.scalars().all()
 
     base_url = "/movies/"
-    prev_page = f"{base_url}?page={page-1}&per_page={per_page}" if page > 1 else None
-    next_page = f"{base_url}?page={page+1}&per_page={per_page}" if page < total_pages else None
+    prev_page = f"{base_url}?page={page - 1}&per_page={per_page}" if page > 1 else None
+    next_page = f"{base_url}?page={page + 1}&per_page={per_page}" if page < total_pages else None
 
     return MovieListResponseSchema(
         movies=movies,
@@ -39,6 +40,7 @@ async def get_movies(
         total_pages=total_pages,
         total_items=total_items
     )
+
 
 @router.get("/movies/{movie_id}/", response_model=MovieDetailResponseSchema)
 async def get_movie(movie_id: int, db: AsyncSession = Depends(get_db)):
